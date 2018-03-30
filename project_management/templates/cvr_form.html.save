@@ -1,0 +1,186 @@
+kies.length; i++) {
+                         var cookie = jQuery.trim(cookies[i]);
+                         // Does this cookie string begin with the name we want?
+                         if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                             cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                             break;
+                         }
+                     }
+                 }
+                 return cookieValue;
+             }
+             if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                 // Only send the token to relative URLs i.e. locally.
+                 xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+             }
+         } 
+    });
+
+    function onReject(){
+        var reason = document.getElementById('txt').value;
+        $.ajax({
+              type: 'POST',
+              url: "/clientvisitreports/{{object.id}}/reject",
+              data: {
+                "reason": reason
+              },
+              dataType: "text",
+              success: function(resultData) { 
+                // alert(resultData);
+                window.location.href = '/clientvisitreports/';
+              }
+        });
+    }
+  </script>
+
+
+<form name="contacts" id="contacts" action="/clientvisitreports/create/" method="post">{% csrf_token %}
+
+    <center>
+
+    <table border="5">
+
+        <div class="form-style-3">
+        
+        <fieldset class = "cvr_form"><legend><b>CLIENT VISIT REPORT<b></legend>
+
+        <label for="field"><span>Project Name 
+            <span class="required">*</span></span>
+            <select name="project_name" required="true" style="width:240px;">
+              <option value="">Choose the Project Name</option>
+                {% for project_name in project_names %}
+                    <option value="{{project_name.id}}" 
+                    {% if project_name.id == project %} selected="selected" {% endif %}> {{project_name.name}}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label for="field1"><span>Client Name 
+            <span class="required">*</span></span>
+            <select name="client_name" required="true" style="width:240px;">
+              <option value="">Choose the Client Name</option>
+                {% for client_name in client_names %}
+                    <option value="{{client_name.id}}" 
+                    {% if client_name.id == client %} selected="selected" {% endif %}> {{client_name}}
+                    </option> 
+                {% endfor %}
+            </select>
+        </label>
+
+
+        {% if object.id %}
+         <input type="hidden" name="object" value="{{object.id}}">
+        {% else %}
+         <input type="hidden" name="object" value="">
+        {% endif %}
+
+
+        {% if object.visit_location %}
+        <label for="field1"><span>Visit Location <span class="required">*</span></span><input type="text" class="input-field" name="visit_location" value={{object.visit_location}} required="true"/></label>
+        {% else %}
+        <label for="field1"><span>Visit Location <span class="required">*</span></span><input type="text" class="input-field" name="visit_location" value="" required="true"/></label>
+        {% endif %}
+
+
+        {% if object.from_date %}
+        <label for="field1"><span>From Date <span class="required">*</span></span><input type="text" id="from" class="input-field" name="from_date" placeholder="MM-DD-YY" value={{object.from_date}} required/></label>
+        {% else %}
+        <label for="field1"><span>From Date <span class="required">*</span></span><input type="text" id="from" class="input-field" name="from_date" placeholder="MM-DD-YY" value="" required/></label>
+        {% endif %}
+
+        {% if object.to_date %}
+        <label for="field1"><span>To Date <span class="required">*</span></span><input type="text" id="to" class="input-field" name="to_date" placeholder="MM-DD-YY" value={{object.to_date}} required/></label>
+        {% else %}
+        <label for="field1"><span>To Date <span class="required">*</span></span><input type="text" id="to" class="input-field" name="to_date" placeholder="MM-DD-YY" value="" required/></label>
+        {% endif %}
+
+        {% if object.reason_for_visit %}
+        <label for="field6"><span>Purpose <span class="required">*</span></span><textarea name="reason_for_visit" value={{object.reason_for_visit}} class="textarea-field" required>{{object.reason_for_visit}}</textarea></label>
+        {% else %}
+        <label for="field6"><span>Purpose <span class="required">*</span></span><textarea name="reason_for_visit" class="textarea-field" required></textarea></label>
+        {% endif %}
+
+        {% if object.actions_taken_during_the_visit %}
+        <label for="field6"><span>Actions Taken During The Visit <span class="required">*</span></span><textarea name="actions_taken_during_the_visit" value={{object.actions_taken_during_the_visit}} class="textarea-field" required>{{object.actions_taken_during_the_visit}}</textarea></label>
+        {% else %}
+        <label for="field6"><span>Actions Taken During The Visit <span class="required">*</span></span><textarea name="actions_taken_during_the_visit" class="textarea-field" required></textarea></label>
+        {% endif %}
+
+        {% if object.next_plan_of_action %}
+        <label for="field6"><span>Next Plan Of Action <span class="required">*</span></span><textarea name="next_plan_of_action" value={{object.next_plan_of_action}} class="textarea-field" required>{{object.next_plan_of_action}}</textarea></label>
+        {% else %}
+        <label for="field6"><span>Next Plan Of Action <span class="required">*</span></span><textarea name="next_plan_of_action" class="textarea-field" required></textarea></label>
+        {% endif %}
+
+        {% if object.comments %}
+        <label for="field6"><span>Comments </span><textarea name="comments" class="textarea-field" value={{object.comments}}>{{object.comments}}</textarea></label>
+        {% else %}
+        <label for="field6"><span>Comments </span><textarea name="comments" class="textarea-field"></textarea></label>
+        {% endif %}
+
+        <label for="field1"><span>Reporting Senior 
+            <span class="required">*</span></span>
+            <select name="reporting_senior_name" required="true" style="width:240px;">
+              <option value="">Choose the Reporting Senior</option>
+                {% for reporting_senior_name in reporting_senior_names %}
+                    <option value="{{reporting_senior_name.id}}"
+                    {% if reporting_senior_name.id == approve %} selected="selected"{% endif %}> {{reporting_senior_name.username}}
+                {% endfor %}
+            </select>
+        </label>
+        </fieldset>
+        
+        </div>
+    
+    </table>
+
+    {% csrf_token %}
+
+
+
+    {% if object.is_approved %}
+        <a href = "/clientvisitreports/">
+        <input type="button" value = "Cancel" name="cancel"></a>
+    {% else %}
+
+      {% if request.user.id == approve %}
+          <a href = "/clientvisitreports/{{object.id}}/approve">
+          <input type="button"  name="approve" value ="Approve"></a>
+          
+      
+          <input type="button" onClick=rejectionPopUp() name="reject" value="Reject">
+
+      {% else %}
+        {% if object.id %}
+            <input type="submit" name="add" value="Update">
+        {% else %}
+            <input type="submit" name="add" value="Submit">   
+        {% endif %}
+      {% endif %}
+
+    {% endif %}
+
+
+
+  </center> 
+  <div class="footer-section">
+    <span class="mandatory">
+      <span>Note: Fields marked with<span class="required"> * </span>are mandatory</span></span>
+        
+  </div>
+                 
+</form>
+
+{% endblock %} 
+{% endblock %}
+
+
+
+
+<!-- 
+<script>
+if(!/[^a-zA-Z0-9]/.test($({{object.id}}).val())) {
+    $("#ErrorMsg").html("OK");
+}
+</script>         -->
